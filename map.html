@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医院地图</title>
+    <style type="text/css">
+        * {
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+        }
+
+        .display {
+            width: 300px;
+            height: 100vh;
+            padding: 8px;
+            overflow-y: scroll;
+        }
+
+        #container {
+            flex: 1;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label h3 {
+            padding: 8px;
+            padding-bottom: 0;
+        }
+
+        ol {
+            margin-top: 8px;
+            margin-left: 32px;
+            margin-bottom: 24px;
+        }
+
+        li {
+            line-height: 24px;
+        }
+
+        textarea {
+            margin: 8px;
+            padding: 8px;
+            width: 168px;
+            height: calc(100vh - 24px);
+            resize: none;
+        }
+    </style>
+    <script type="text/javascript"
+        src="https://api.map.baidu.com/api?v=3.0&ak=hUjsVNkoPQfQ8Dj496c4P4A7GTbyRj4U"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="display">
+        <h3>医院列表</h3>
+        <div id="listEle">
+        </div>
+    </div>
+    <div id="container"></div>
+    <label for="">
+        <h3>输入医院</h3>
+        <textarea id="inputEle"></textarea>
+    </label>
+
+    <script>
+        const map = new BMap.Map("container");
+        map.centerAndZoom("上海", 13);
+        map.enableScrollWheelZoom(true);
+
+        // 创建地址解析器实例     
+        const myGeo = new BMap.Geocoder();
+
+        //向地图中添加缩略图控件  
+        const ctrlOve = new window.BMap.OverviewMapControl({
+            anchor: BMAP_ANCHOR_BOTTOM_RIGHT,
+            isOpen: 1
+        });
+        map.addControl(ctrlOve);
+
+
+        // 将地址解析结果显示在地图上
+        function setPoint(text, index) {
+            myGeo.getPoint(text, (point) => {
+                const opts = {
+                    width: 250,     // 信息窗口宽度    
+                    height: 100,     // 信息窗口高度    
+                    title: "Hello"  // 信息窗口标题   
+                }
+
+                if (point && parseFloat(point.lat) !== parseFloat(31.235929042252014)) {
+                    let marker = new window.BMap.Marker(point); //按照地图点坐标生成标记  
+                    map.addOverlay(marker);
+
+                    const label = new window.BMap.Label(index, { offset: new window.BMap.Size(20, -10) });
+                    label.setStyle({ backgroundColor: 'red', color: '#fff' })
+                    marker.setLabel(label);
+                }
+            },
+                "上海市");
+        }
+        function clearPoint() {
+            map.clearOverlays()
+        }
+
+        let inputList = []
+        document.addEventListener("DOMContentLoaded", () => {
+            inputEle.addEventListener("input", (e) => {
+                if (e.target.value) {
+                    clearPoint()
+                    inputList = e.target.value.split('\n')
+                    const ol = document.createElement('ol')
+                    ol.id = 'listEle'
+                    inputList.forEach((text, index) => {
+                        if (!text) return
+                        const li = document.createElement('li')
+                        li.innerText = text
+                        ol.append(li)
+
+                        setPoint(text, index)
+                    });
+                    listEle.replaceWith(ol);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
