@@ -29,6 +29,13 @@
             height: 100vh;
             padding: 8px;
             overflow-y: scroll;
+            position: relative;
+        }
+
+        button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
         }
 
         #container {
@@ -36,7 +43,6 @@
         }
 
         label {
-            display: flex;
             flex-direction: column;
         }
 
@@ -71,11 +77,12 @@
 <body>
     <div class="display">
         <h3>医院列表</h3>
+        <button id="closeInput">关闭输入框</button>
         <div id="listEle">
         </div>
     </div>
     <div id="container"></div>
-    <label for="">
+    <label id="inputLabel" style="display: flex;">
         <h3>输入医院</h3>
         <textarea id="inputEle"></textarea>
     </label>
@@ -140,6 +147,18 @@
                 }
             });
         });
+
+        closeInput.addEventListener('click', () => {
+            if (inputLabel.style.display === 'none') {
+                console.log(inputLabel.style.display)
+                inputLabel.style.display = "flex"
+                closeInput.innerText = "关闭输入框"
+            } else {
+                console.log(inputLabel.style.display)
+                inputLabel.style.display = "none"
+                closeInput.innerText = "打开输入框"
+            }
+        })
     </script>
 </body>
 
