@@ -126,7 +126,6 @@
 
         var getSingle = function (fn) {
             var result;
-            console.log(22, result);
             return function () {
                 return result || (result = fn.apply(this, arguments));
             }

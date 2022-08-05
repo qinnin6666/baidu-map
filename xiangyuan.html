@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>享元模式</title>
+</head>
+
+<body>
+    <!-- <script>
+        var Model = function (sex, underwear) {
+            this.sex = sex;
+            this.underwear = underwear;
+        };
+        Model.prototype.takePhoto = function () {
+            console.log('sex= ' + this.sex + ' underwear=' + this.underwear);
+        };
+        for (var i = 1; i <= 50; i++) {
+            var maleModel = new Model('male', 'underwear' + i);
+            maleModel.takePhoto();
+        };
+        for (var j = 1; j <= 50; j++) {
+            var femaleModel = new Model('female', 'underwear' + j);
+            femaleModel.takePhoto();
+        }; 
+    </script> -->
+
+    <!-- <script>
+        var Model = function (sex) {
+            this.sex = sex;
+        };
+        Model.prototype.takePhoto = function () {
+            console.log('sex= ' + this.sex + ' underwear=' + this.underwear);
+        };
+        var maleModel = new Model('male'),
+            femaleModel = new Model('female');
+        for (var i = 1; i <= 50; i++) {
+            maleModel.underwear = 'underwear' + i;
+            maleModel.takePhoto();
+        };
+        for (var j = 1; j <= 50; j++) {
+            femaleModel.underwear = 'underwear' + j;
+            femaleModel.takePhoto();
+        }; 
+    </script> -->
+    <p>
+        内部状态存储于对象内部。
+        内部状态可以被一些对象共享。
+        内部状态独立于具体的场景，确定值之后，通常不会改变。
+        外部状态取决于具体的场景，并根据场景而变化，外部状态不能被共享。
+        内部状态有多少种组合，系统中便最多存在多少个对象，因为性别通常只有男女两种，所以该内衣厂商最多只需要 2 个对象。
+    </p>
+</body>
+
+</html>
