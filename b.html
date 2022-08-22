@@ -1,0 +1,132 @@
+<html>
+
+<body>
+    <button id="execute">点击我执行命令</button>
+    <button id="undo">点击我执行命令</button>
+    <script>
+        // var Tv = {
+        //     open: function () {
+        //         console.log('打开电视机');
+        //     },
+        //     close: function () {
+        //         console.log('关上电视机');
+        //     }
+        // };
+        // var OpenTvCommand = function (receiver) {
+        //     this.receiver = receiver;
+        // };
+        // OpenTvCommand.prototype.execute = function () {
+        //     this.receiver.open(); // 执行命令，打开电视机
+        // };
+        // OpenTvCommand.prototype.undo = function () {
+        //     this.receiver.close(); // 撤销命令，关闭电视机
+        // };
+        // var setCommand = function (command) {
+        //     document.getElementById('execute').onclick = function () {
+        //         command.execute(); // 输出：打开电视机
+        //     }
+        //     document.getElementById('undo').onclick = function () {
+        //         command.undo(); // 输出：关闭电视机
+        //     }
+        // };
+        // setCommand(new OpenTvCommand(Tv));
+
+        // var Type = {};
+        // for (var i = 0, type; type = ['String', 'Array', 'Number', 1][i++];) {
+        //     (function (type) {
+        //         Type['is' + type] = function (obj) {
+        //             return Object.prototype.toString.call(obj) === '[object ' + type + ']';
+        //         }
+        //     })(type)
+        // };
+        // console.log(Type.isArray([])); // 输出：true
+        // console.log(Type.isString("str")); // 输出：true 
+
+        // const b = {
+        //     c: function () {
+        //         console.log(1, this);
+        //         return function () {
+        //             console.log(2, this);
+        //         }
+        //     }
+        // }
+
+        // const test = b.c()
+        // test()
+
+        // function bibao() {
+        //     return function () {
+        //         console.log(1, arguments);
+        //     }
+        // }
+        // const a = bibao()
+        // a(1, 2, 3, 4, 6)
+
+        // Function.prototype.before = function (beforefn) {
+        //     var __self = this; // 保存原函数的引用
+        //     return function () { // 返回包含了原函数和新函数的"代理"函数
+        //         console.log(111, this);
+        //         console.log(222, __self);
+        //         beforefn.apply(this, arguments); // 执行新函数，修正 this
+        //         return __self.apply(this, arguments); // 执行原函数
+        //     }
+        // };
+        // Function.prototype.after = function (afterfn) {
+        //     var __self = this;
+        //     return function () {
+        //         var ret = __self.apply(this, arguments);
+        //         afterfn.apply(this, arguments);
+        //         return ret;
+        //     }
+        // };
+        // var func = function () {
+        //     console.log(2);
+        // };
+        // func = func.after(function () {
+        //     console.log(3);
+        // }).before(function () {
+        //     console.log(this);
+        //     console.log(1);
+        // });
+        // func();
+
+        // Function.prototype.uncurrying = function () {
+        //     var self = this;
+        //     return function () {
+        //         var obj = Array.prototype.shift.call(arguments);
+        //         console.log(22, obj);
+        //         return self.apply(obj, arguments);
+        //     };
+        // };
+
+        // var push = Array.prototype.push.uncurrying();
+        // (function () {
+        //     push(arguments, 4);
+        //     console.log(arguments); // 输出：[1, 2, 3, 4]
+        // })(1, 2, 3);
+
+
+        var timeChunk = function (ary, fn, count) {
+            var obj,
+                t;
+            var len = ary.length;
+            var start = function () {
+                for (var i = 0; i < Math.min(count || 1, ary.length); i++) {
+                    var obj = ary.shift();
+                    fn(obj);
+                }
+            };
+            return function () {
+                t = setInterval(function () {
+                    if (ary.length === 0) { // 如果全部节点都已经被创建好
+                        return clearInterval(t);
+                    }
+                    start();
+                }, 200); // 分批执行的时间间隔，也可以用参数的形式传入
+            };
+        };
+
+    </script>
+</body>
+
+</html>

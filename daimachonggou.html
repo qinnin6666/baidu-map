@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码重构</title>
+</head>
+
+<body>
+    <h4>代码重构</h4>
+
+    <p>提炼函数</p>
+    <ul>
+        <li>避免出现超大函数。</li>
+        <li>独立出来的函数有助于代码复用。</li>
+        <li>独立出来的函数更容易被覆写。</li>
+        <li>独立出来的函数如果拥有一个良好的命名，它本身就起到了注释的作用。</li>
+    </ul>
+    <script>
+        var getUserInfo = function () {
+            ajax('http:// xxx.com/userInfo', function (data) {
+                console.log('userId: ' + data.userId);
+                console.log('userName: ' + data.userName);
+                console.log('nickName: ' + data.nickName);
+            });
+        };
+        // 改成：
+        var getUserInfo = function () {
+            ajax('http:// xxx.com/userInfo', function (data) {
+                printDetails(data);
+            });
+        };
+        var printDetails = function (data) {
+            console.log('userId: ' + data.userId);
+            console.log('userName: ' + data.userName);
+            console.log('nickName: ' + data.nickName);
+        };
+    </script>
+
+    <p>合并重复的条件片段</p>
+    <script>
+        var paging = function (currPage) {
+            if (currPage <= 0) {
+                currPage = 0;
+                jump(currPage); // 跳转
+            } else if (currPage >= totalPage) {
+                currPage = totalPage;
+                jump(currPage); // 跳转
+            } else {
+                jump(currPage); // 跳转
+            }
+        };
+        // 改成：
+        var paging = function (currPage) {
+            if (currPage <= 0) {
+                currPage = 0;
+            } else if (currPage >= totalPage) {
+                currPage = totalPage;
+            }
+            jump(currPage); // 把 jump 函数独立出来
+        }; 
+    </script>
+
+    <p>把条件分支语句提炼成函数</p>
+    <script>
+        var getPrice = function (price) {
+            var date = new Date();
+            if (date.getMonth() >= 6 && date.getMonth() <= 9) { // 夏天
+                return price * 0.8;
+            }
+            return price;
+        };
+        // 改成：
+        var isSummer = function () {
+            var date = new Date();
+            return date.getMonth() >= 6 && date.getMonth() <= 9;
+        };
+        var getPrice = function (price) {
+            if (isSummer()) { // 夏天
+                return price * 0.8;
+            }
+            return price;
+        }; 
+    </script>
+
+    <p>合理使用循环</p>
+    <script>
+        // 在函数体内，如果有些代码实际上负责的是一些重复性的工作，那么合理利用循环不仅可以完成同样的功能，还可以使代码量更少。
+        var createXHR = function () {
+            var xhr;
+            try {
+                xhr = new ActiveXObject('MSXML2.XMLHttp.6.0');
+            } catch (e) {
+                try {
+                    xhr = new ActiveXObject('MSXML2.XMLHttp.3.0');
+                } catch (e) {
+                    xhr = new ActiveXObject('MSXML2.XMLHttp');
+                }
+            }
+            return xhr;
+        };
+        var xhr = createXHR();
+
+        // 改成：
+        var createXHR = function () {
+            var versions = ['MSXML2.XMLHttp.6.0ddd', 'MSXML2.XMLHttp.3.0', 'MSXML2.XMLHttp'];
+            for (var i = 0, version; version = versions[i++];) {
+                try {
+                    return new ActiveXObject(version);
+                } catch (e) {
+                }
+            }
+        };
+        var xhr = createXHR();
+    </script>
+
+    <p>提前让函数退出代替嵌套条件分支</p>
+    <script>
+        // 如果对函数的剩余部分不感兴趣，那就应该立即退出。引导阅读者去看一些没有用的 else 片段，只会妨碍他们对程序的理解。 
+        var del = function (obj) {
+            if (obj.isReadOnly) { // 反转 if 表达式
+                return;
+            }
+            if (obj.isFolder) {
+                return deleteFolder(obj);
+            }
+            if (obj.isFile) {
+                return deleteFile(obj);
+            }
+        };
+    </script>
+
+    <p>传递对象参数代替过长的参数列表</p>
+    <script>
+        var setUserInfo = function (id, name, address, sex, mobile, qq) {
+            console.log('id= ' + id);
+            console.log('name= ' + name);
+            console.log('address= ' + address);
+            console.log('sex= ' + sex);
+            console.log('mobile= ' + mobile);
+            console.log('qq= ' + qq);
+        };
+        setUserInfo(1314, 'sven', 'shenzhen', 'male', '137********', 377876679);
+
+        // 改成：
+        var setUserInfo = function (obj) {
+            console.log('id= ' + obj.id);
+            console.log('name= ' + obj.name);
+            console.log('address= ' + obj.address);
+            console.log('sex= ' + obj.sex);
+            console.log('mobile= ' + obj.mobile);
+            console.log('qq= ' + obj.qq);
+        };
+        setUserInfo({
+            id: 1314,
+            name: 'sven',
+            address: 'shenzhen',
+            sex: 'male',
+            mobile: '137********',
+            qq: 377876679
+        });
+    </script>
+
+    <p>尽量减少函数参数数量</p>
+    <script>
+        var draw = function (width, height, square) { };
+        // 改成：
+        var draw = function (width, height) {
+            var square = width * height;
+        };
+    </script>
+
+    <p>少用三目运算符</p>
+    <script>
+        // 反例
+        if (!aup || !bup) {
+            return a === doc ? -1 :
+                b === doc ? 1 :
+                    aup ? -1 :
+                        bup ? 1 :
+                            sortInput ?
+                                (indexOf.call(sortInput, a) - indexOf.call(sortInput, b)) :
+                                0;
+        }
+    </script>
+
+    <p>合理使用链式调用：让方法调用结束后返回对象自身</p>
+    <p>如果该链条的结构相对稳定，后期不易发生修改，那么使用链式调用无可厚非。</p>
+    <p>但如果该链条很容易发生变化，导致调试和维护困难，那么还是建议使用普通调用的形式。</p>
+    <script>
+        var User = function () {
+            this.id = null;
+            this.name = null;
+        };
+        User.prototype.setId = function (id) {
+            this.id = id;
+            return this;
+        };
+        User.prototype.setName = function (name) {
+            this.name = name;
+            return this;
+        };
+        console.log(new User().setId(1314).setName('sven'));
+
+        // 如果该链条很容易发生变化，导致调试和维护困难，那么还是建议使用普通调用的形式。
+        var user = new User();
+        user.setId(1314);
+        user.setName('sven'); 
+    </script>
+
+    <p>分解大型类</p>
+
+    <p>用 return 退出多重循环</p>
+    <script>
+        var print = function (i) {
+            console.log(i);
+        };
+        var func = function () {
+            for (var i = 0; i < 10; i++) {
+                for (var j = 0; j < 10; j++) {
+                    if (i * j > 30) {
+                        return print(i);
+                    }
+                }
+            }
+        };
+        func();
+    </script>
+</body>
+
+</html>

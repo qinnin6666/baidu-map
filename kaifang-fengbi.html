@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开放-封闭原则</title>
+</head>
+
+<body>
+    <p>开放-封闭原则：（类、模块、函数）等应该是可以扩展的，但是不可修改。</p>
+    <p>找出程序中将要发生变化的地方(代码结构发生变化)，然后把变化封装起来。</p>
+
+    <ol>
+        <li>使用对象多态性</li>
+        <li>放置挂钩(hook)</li>
+        <li>使用回调函数</li>
+    </ol>
+    <p>使用对象多态性</p>
+
+    <p>
+        开放封闭原则要求我们只能通过增加源代码的方式扩展程序的功能，而不允许修改源代码。
+    </p>
+    <ol>
+        <li>挑选出最容易发生变化的地方，然后构造抽象来封装这些变化。</li>
+        <li>在不可避免发生修改的时候，尽量修改那些相对容易修改的地方。</li>
+    </ol>
+    <script>
+        var makeSound = function (animal) {
+            animal.sound();
+        };
+        var Duck = function () { };
+        Duck.prototype.sound = function () {
+            console.log('嘎嘎嘎');
+        };
+        var Chicken = function () { };
+        Chicken.prototype.sound = function () {
+            console.log('咯咯咯');
+        };
+        makeSound(new Duck()); // 嘎嘎嘎
+        makeSound(new Chicken()); // 咯咯咯
+        /********* 增加动物狗，不用改动原有的 makeSound 函数 ****************/
+        var Dog = function () { };
+        Dog.prototype.sound = function () {
+            console.log('汪汪汪');
+        };
+        makeSound(new Dog()); // 汪汪汪
+    </script>
+
+    <p>放置挂钩(hook)</p>
+    <script>
+        // 钩子
+        var Beverage = function () { };
+        Beverage.prototype.boilWater = function () {
+            console.log('把水煮沸');
+        };
+        Beverage.prototype.brew = function () {
+            throw new Error('子类必须重写 brew 方法');
+        };
+        Beverage.prototype.pourInCup = function () {
+            throw new Error('子类必须重写 pourInCup 方法');
+        };
+        Beverage.prototype.addCondiments = function () {
+            throw new Error('子类必须重写 addCondiments 方法');
+        };
+        Beverage.prototype.customerWantsCondiments = function () {
+            return true; // 默认需要调料
+        };
+        Beverage.prototype.init = function () {
+            this.boilWater();
+            this.brew();
+            this.pourInCup();
+            if (this.customerWantsCondiments()) { // 如果挂钩返回 true，则需要调料
+                this.addCondiments();
+            }
+        };
+
+        var CoffeeWithHook = function () { };
+        CoffeeWithHook.prototype = new Beverage();
+        CoffeeWithHook.prototype.brew = function () {
+            console.log('用沸水冲泡咖啡');
+        };
+        CoffeeWithHook.prototype.pourInCup = function () {
+            console.log('把咖啡倒进杯子');
+        };
+        CoffeeWithHook.prototype.addCondiments = function () {
+            console.log('加糖和牛奶');
+        };
+        CoffeeWithHook.prototype.customerWantsCondiments = function () {
+            return window.confirm('请问需要调料吗？');
+        };
+
+        var coffeeWithHook = new CoffeeWithHook();
+        coffeeWithHook.init(); 
+    </script>
+
+    <p>使用回调函数</p>
+    <ul>
+        <li>可以把一部分易于变化的逻辑封装在回调函数里，然后把回调函数当作参数传入一个稳定和封闭的函数中。</li>
+        <li>当回调函数被执行的时候，程序就可以因为回调函数的内部逻辑不同，而产生不同的结果。</li>
+    </ul>
+    <script>
+        var arrayMap = function (arg, callback) {
+            var value,
+                ret = [];
+            for (let i = 0, length = arg.length; i < length; i++) {
+                value = callback(i, arg[i]);
+                ret.push(value);
+            }
+            return ret;
+        }
+        var a = arrayMap([1, 2, 3], function (i, n) {
+            return n * 2;
+        });
+        var b = arrayMap([1, 2, 3], function (i, n) {
+            return n * 3;
+        });
+        console.log(a); // 输出：[ 2, 4, 6 ]
+        console.log(b); // 输出：[ 3, 6, 9 ]
+    </script>
+</body>
+
+</html>

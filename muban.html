@@ -126,6 +126,7 @@
                 this.addCondiments();
             }
         };
+
         var CoffeeWithHook = function () { };
         CoffeeWithHook.prototype = new Beverage();
         CoffeeWithHook.prototype.brew = function () {
@@ -140,6 +141,7 @@
         CoffeeWithHook.prototype.customerWantsCondiments = function () {
             return window.confirm('请问需要调料吗？');
         };
+
         var coffeeWithHook = new CoffeeWithHook();
         coffeeWithHook.init(); 
     </script> -->

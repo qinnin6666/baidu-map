@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>装饰者模式</title>
+</head>
+
+<body>
+    <div>装饰者模式能够在不改 变对象自身的基础上，在程序运行期间给对象 动态地添加职责。</div>
+
+    <!-- <script>
+        var Plane = function () { }
+        Plane.prototype.fire = function () {
+            console.log('发射普通子弹');
+        }
+
+        var MissileDecorator = function (plane) {
+            this.plane = plane;
+        }
+        MissileDecorator.prototype.fire = function () {
+            this.plane.fire();
+            console.log('发射导弹');
+        }
+
+        var AtomDecorator = function (plane) {
+            this.plane = plane;
+        }
+        AtomDecorator.prototype.fire = function () {
+            this.plane.fire();
+            console.log('发射原子弹');
+        }
+        
+        var plane = new Plane();
+        plane = new MissileDecorator(plane);
+        plane = new AtomDecorator(plane);
+        plane.fire();
+// 分别输出： 发射普通子弹、发射导弹、发射原子弹
+    </script> -->
+
+    <!-- <script>
+        var plane = {
+            fire: function () {
+                console.log('发射普通子弹');
+            }
+        }
+        var missileDecorator = function () {
+            console.log('发射导弹');
+        }
+        var atomDecorator = function () {
+            console.log('发射原子弹');
+        }
+        var fire1 = plane.fire;
+        plane.fire = function () {
+            fire1();
+            missileDecorator();
+        }
+        var fire2 = plane.fire;
+        plane.fire = function () {
+            fire2();
+            atomDecorator();
+        }
+        plane.fire();
+    </script> -->
+
+    <!-- <button id="button"></button>
+    <script>
+        Function.prototype.before = function (beforefn) {
+            var __self = this;
+            return function () {
+                beforefn.apply(this, arguments);
+                return __self.apply(this, arguments);
+            }
+        }
+        Function.prototype.after = function (afterfn) {
+            var __self = this;
+            return function () {
+                var ret = __self.apply(this, arguments);
+                afterfn.apply(this, arguments);
+                return ret;
+            }
+        };
+        document.getElementById = document.getElementById.after(function () {
+            console.log(1);
+        });
+        var button = document.getElementById('button');
+        console.log(button);
+    </script> -->
+
+    <!-- <script>
+        var before = function (fn, beforefn) {
+            return function () {
+                beforefn.apply(this, arguments);
+                return fn.apply(this, arguments);
+            }
+        }
+        var a = before(
+            function () { console.log(3) },
+            function () { console.log(2) }
+        );
+        a = before(a, function () { console.log(1); });
+        a();
+    </script> -->
+
+    <!-- <button tag="login" id="button">点击打开登录浮层</button>
+    <script>
+        var showLogin = function () {
+            console.log('打开登录浮层');
+            log(this.getAttribute('tag'));
+        }
+        var log = function (tag) {
+            console.log('上报标签为: ' + tag);
+            // (new Image).src = 'http:// xxx.com/report?tag=' + tag; // 真正的上报代码略
+        }
+        document.getElementById('button').onclick = showLogin;
+    </script> -->
+
+    <!-- <button tag="login" id="button">点击打开登录浮层</button>
+    <script>
+        Function.prototype.after = function (afterfn) {
+            var __self = this;
+            return function () {
+                var ret = __self.apply(this, arguments);
+                afterfn.apply(this, arguments);
+                return ret;
+            }
+        };
+        var showLogin = function () {
+            console.log('打开登录浮层');
+        }
+        var log = function () {
+            console.log('上报标签为: ' + this.getAttribute('tag'));
+        }
+        showLogin = showLogin.after(log); // 打开登录浮层之后上报数据
+        document.getElementById('button').onclick = showLogin;
+    </script> -->
+
+    <!-- 用AOP动态改变函数的参数 -->
+    <!-- <script>
+        Function.prototype.before = function (beforefn) {
+            var __self = this;
+            return function () {
+                beforefn.apply(this, arguments); // (1)
+                return __self.apply(this, arguments); // (2)
+            }
+        }
+        var func = function (param) {
+            console.log(param); // 输出： {a: "a", b: "b"}
+        }
+        func = func.before(function (param) {
+            param.b =  'b';
+        });
+        func({ a: 'a' });
+    </script> -->
+
+    <script src="./ajax.js"></script>
+    <!-- <script>
+        Function.prototype.before = function (beforefn) {
+            var __self = this;
+            return function () {
+                beforefn.apply(this, arguments);
+                return __self.apply(this, arguments);
+            }
+        }
+        var getToken = function () {
+            return 'Token';
+        }
+        ajax = ajax.before(function (type, url, param) {
+            param.Token = getToken();
+        });
+        ajax('get', 'http://xxx.com/userinfo', { name: 'sven' }); 
+    </script> -->
+
+    用户名：<input id="username" type="text" /><br />
+    密码： <input id="password" type="password" /><br />
+    <input id="submitBtn" type="button" value="提交"><br />
+    <script>
+        var username = document.getElementById('username'),
+            password = document.getElementById('password'),
+            submitBtn = document.getElementById('submitBtn');
+        // var formSubmit = function () {
+        //     if (username.value === '') {
+        //         return console.log('用户名不能为空');
+        //     }
+        //     if (password.value === '') {
+        //         return console.log('密码不能为空');
+        //     }
+        //     var param = {
+        //         username: username.value,
+        //         password: password.value
+        //     }
+        //     ajax('http:// xxx.com/login', param); // ajax 具体实现略
+        // }
+        // submitBtn.onclick = function () {
+        //     formSubmit();
+        // }
+
+        // var validata = function () {
+        //     if (username.value === '') {
+        //         console.log('用户名不能为空');
+        //         return false;
+        //     }
+        //     if (password.value === '') {
+        //         console.log('密码不能为空');
+        //         return false;
+        //     }
+        // }
+        // var formSubmit = function () {
+        //     if (validata() === false) { // 校验未通过
+        //         return;
+        //     }
+        //     var param = {
+        //         username: username.value,
+        //         password: password.value
+        //     }
+        //     ajax('http:// xxx.com/login', param);
+        // }
+        // submitBtn.onclick = function () {
+        //     formSubmit();
+        // } 
+
+        Function.prototype.before = function (beforefn) {
+            var __self = this;
+            return function () {
+                if (beforefn.apply(this, arguments) === false) {
+                    // beforefn 返回 false 的情况直接 return，不再执行后面的原函数
+                    return;
+                }
+                return __self.apply(this, arguments);
+            }
+        }
+        var validata = function () {
+            if (username.value === '') {
+                console.log('用户名不能为空');
+                return false;
+            }
+            if (password.value === '') {
+                console.log('密码不能为空');
+                return false;
+            }
+        }
+        var formSubmit = function () {
+            var param = {
+                username: username.value,
+                password: password.value
+            }
+            ajax('get', 'http://xxx.com/login', param);
+        }
+        formSubmit = formSubmit.before(validata);
+        submitBtn.onclick = function () {
+            formSubmit();
+        } 
+    </script>
+</body>
+
+</html>
