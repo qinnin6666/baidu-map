@@ -10,26 +10,26 @@
 
 <body>
     <script>
-        // var salesOffices = {}; // 定义售楼处
-        // salesOffices.clientList = []; // 缓存列表，存放订阅者的回调函数
-        // salesOffices.listen = function (fn) { // 增加订阅者
-        //     this.clientList.push(fn); // 订阅的消息添加进缓存列表
-        // };
-        // salesOffices.trigger = function () { // 发布消息
-        //     for (var i = 0, fn; fn = this.clientList[i++];) {
-        //         fn.apply(this, arguments); // (2) // arguments 是发布消息时带上的参数
-        //     }
-        // };
+        var salesOffices = {}; // 定义售楼处
+        salesOffices.clientList = []; // 缓存列表，存放订阅者的回调函数
+        salesOffices.listen = function (fn) { // 增加订阅者
+            this.clientList.push(fn); // 订阅的消息添加进缓存列表
+        };
+        salesOffices.trigger = function () { // 发布消息
+            for (var i = 0, fn; fn = this.clientList[i++];) {
+                fn.apply(this, arguments); // (2) // arguments 是发布消息时带上的参数
+            }
+        };
 
-        // salesOffices.listen(function (price, squareMeter) { // 小明订阅消息
-        //     console.log('价格= ' + price);
-        //     console.log('squareMeter= ' + squareMeter);
-        // });
-        // salesOffices.listen(function (price, squareMeter) { // 小红订阅消息
-        //     console.log('价格= ' + price);
-        //     console.log('squareMeter= ' + squareMeter);
-        // });
-        // salesOffices.trigger(2000000, 88); // 输出：200 万，88 平方米
+        salesOffices.listen(function (price, squareMeter) { // 小明订阅消息
+            console.log('价格= ' + price);
+            console.log('squareMeter= ' + squareMeter);
+        });
+        salesOffices.listen(function (price, squareMeter) { // 小红订阅消息
+            console.log('价格= ' + price);
+            console.log('squareMeter= ' + squareMeter);
+        });
+        salesOffices.trigger(2000000, 88); // 输出：200 万，88 平方米
         // salesOffices.trigger(3000000, 110); // 输出：300 万，110 平方米
 
 
@@ -61,60 +61,60 @@
         // salesOffices.trigger('squareMeter110', 3000000); // 发布 110 平方米房子的价格
 
 
-        // 通用实现
-        var event = {
-            clientList: {},
-            listen: function (key, fn) {
-                if (!this.clientList[key]) {
-                    this.clientList[key] = [];
-                }
-                this.clientList[key].push(fn); // 订阅的消息添加进缓存列表
-            },
-            trigger: function () {
-                var key = Array.prototype.shift.call(arguments), // (1);
-                    fns = this.clientList[key];
-                if (!fns || fns.length === 0) { // 如果没有绑定对应的消息
-                    return false;
-                }
-                for (var i = 0, fn; fn = fns[i++];) {
-                    fn.apply(this, arguments); // (2) // arguments 是 trigger 时带上的参数
-                }
-            },
-            remove(key, fn) {
-                var fns = this.clientList[key];
-                if (!fns) { // 如果 key 对应的消息没有被人订阅，则直接返回
-                    return false;
-                }
-                if (!fn) { // 如果没有传入具体的回调函数，表示需要取消 key 对应消息的所有订阅
-                    fns && (fns.length = 0);
-                } else {
-                    for (var l = fns.length - 1; l >= 0; l--) { // 反向遍历订阅的回调函数列表
-                        var _fn = fns[l];
-                        if (_fn === fn) {
-                            fns.splice(l, 1); // 删除订阅者的回调函数
-                        }
-                    }
-                }
-            }
-        };
-        var installEvent = function (obj) {
-            for (var i in event) {
-                obj[i] = event[i];
-            }
-        };
+        // // 通用实现
+        // var event = {
+        //     clientList: {},
+        //     listen: function (key, fn) {
+        //         if (!this.clientList[key]) {
+        //             this.clientList[key] = [];
+        //         }
+        //         this.clientList[key].push(fn); // 订阅的消息添加进缓存列表
+        //     },
+        //     trigger: function () {
+        //         var key = Array.prototype.shift.call(arguments), // (1);
+        //             fns = this.clientList[key];
+        //         if (!fns || fns.length === 0) { // 如果没有绑定对应的消息
+        //             return false;
+        //         }
+        //         for (var i = 0, fn; fn = fns[i++];) {
+        //             fn.apply(this, arguments); // (2) // arguments 是 trigger 时带上的参数
+        //         }
+        //     },
+        //     remove(key, fn) {
+        //         var fns = this.clientList[key];
+        //         if (!fns) { // 如果 key 对应的消息没有被人订阅，则直接返回
+        //             return false;
+        //         }
+        //         if (!fn) { // 如果没有传入具体的回调函数，表示需要取消 key 对应消息的所有订阅
+        //             fns && (fns.length = 0);
+        //         } else {
+        //             for (var l = fns.length - 1; l >= 0; l--) { // 反向遍历订阅的回调函数列表
+        //                 var _fn = fns[l];
+        //                 if (_fn === fn) {
+        //                     fns.splice(l, 1); // 删除订阅者的回调函数
+        //                 }
+        //             }
+        //         }
+        //     }
+        // };
+        // var installEvent = function (obj) {
+        //     for (var i in event) {
+        //         obj[i] = event[i];
+        //     }
+        // };
 
-        var salesOffices = {};
-        installEvent(salesOffices);
-        salesOffices.listen('squareMeter88', fn1 = function (price) { // 小明订阅消息
-            console.log('价格= ' + price);
-        });
-        salesOffices.listen('squareMeter88', fn2 = function (price) { // 小红订阅消息
-            console.log('价格= ' + price, 11);
-        });
+        // var salesOffices = {};
+        // installEvent(salesOffices);
+        // salesOffices.listen('squareMeter88', fn1 = function (price) { // 小明订阅消息
+        //     console.log('价格= ' + price);
+        // });
+        // salesOffices.listen('squareMeter88', fn2 = function (price) { // 小红订阅消息
+        //     console.log('价格= ' + price, 11);
+        // });
         
-        salesOffices.trigger('squareMeter88', 3000000); // 输出：3000000
-        salesOffices.remove('squareMeter88', fn1); // 删除小明的订阅
-        salesOffices.trigger('squareMeter88', 2000000); // 输出：2000000
+        // salesOffices.trigger('squareMeter88', 3000000); // 输出：3000000
+        // salesOffices.remove('squareMeter88', fn1); // 删除小明的订阅
+        // salesOffices.trigger('squareMeter88', 2000000); // 输出：2000000
     </script>
 </body>
 
